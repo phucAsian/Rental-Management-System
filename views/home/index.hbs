@@ -1,0 +1,51 @@
+<div class="container mt-5 mb-5">
+
+  <div class="alert alert-primary bg-light border-primary-subtle rounded-4 mb-5 p-4 shadow-sm" style="background-color: #f8faff !important;">
+    <div class="d-flex align-items-center mb-3">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle me-2 text-primary" viewBox="0 0 16 16">
+        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+      </svg>
+  </div>
+
+  <h2 class="fw-bold mb-2">Available Rooms</h2>
+  <p class="text-muted mb-4">Browse through our collection of rental rooms</p>
+
+  <div class="row g-4"> {{#each rooms}}
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden">
+
+        <div class="position-relative">
+          <img src="{{image}}" class="card-img-top" style="height:220px; object-fit:cover">
+
+          <span class="badge rounded-pill
+            {{#if (eq status "Available")}}bg-success text-success bg-opacity-10
+            {{else if (eq status "Pending")}}bg-warning text-warning bg-opacity-10
+            {{else}}bg-danger text-danger bg-opacity-10{{/if}}
+            position-absolute top-0 end-0 m-3 px-3 py-2 fw-normal" style="font-size: 0.85rem;">
+            {{status}}
+          </span>
+        </div>
+
+        <div class="card-body p-4">
+          <h5 class="card-title fw-bold mb-3">{{name}}</h5>
+          
+          <p class="text-muted mb-3 d-flex align-items-center" style="font-size: 0.9rem;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt me-2" viewBox="0 0 16 16">
+              <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
+              <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+            </svg>
+            {{location}}
+          </p>
+
+          <p class="text-primary fs-5 fw-bold mb-0">
+            $ {{price}} <span class="text-secondary fs-6 fw-normal">/month</span>
+          </p>
+        </div>
+
+      </div>
+    </div>
+    {{/each}}
+  </div>
+
+</div>

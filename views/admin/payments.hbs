@@ -1,0 +1,86 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="fw-bold d-flex align-items-center m-0 text-dark">
+    <i class="bi bi-credit-card text-primary me-3 fs-3"></i> Monthly Payment Management
+  </h3>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+      <p class="text-muted fw-semibold mb-2 d-flex align-items-center small">
+        <i class="bi bi-check-lg text-success me-2 fs-5"></i> Payments Received
+      </p>
+      <h3 class="fw-bold mb-0 text-dark">$1,750</h3>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+      <p class="text-muted fw-semibold mb-2 d-flex align-items-center small">
+        <i class="bi bi-clock text-warning me-2 fs-5"></i> Pending Payments
+      </p>
+      <h3 class="fw-bold mb-0 text-dark">$780</h3>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+      <p class="text-muted fw-semibold mb-2 d-flex align-items-center small">
+        <i class="bi bi-x-lg text-danger me-2 fs-5"></i> Overdue Payments
+      </p>
+      <h3 class="fw-bold mb-0 text-dark">$950</h3>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 p-4">
+  
+  <h6 class="fw-bold text-dark mb-4 mt-2">Payment Records</h6>
+
+  <div class="table-responsive">
+    <table class="table table-borderless align-middle mb-0">
+      <thead class="text-muted border-bottom">
+        <tr>
+          <th class="fw-medium pb-3 small">Tenant</th>
+          <th class="fw-medium pb-3 small">Room</th>
+          <th class="fw-medium pb-3 small">Amount</th>
+          <th class="fw-medium pb-3 small">Due Date</th>
+          <th class="fw-medium pb-3 small">Paid Date</th>
+          <th class="fw-medium pb-3 small text-center">Method</th>
+          <th class="fw-medium pb-3 small text-center">Status</th>
+          <th class="fw-medium pb-3 small text-center">Actions</th>
+        </tr>
+      </thead>
+      
+      <tbody>
+        {{#each payments}}
+        <tr class="border-bottom">
+          <td class="py-3 text-muted small">{{tenant}}</td>
+          <td class="py-3 text-muted small">{{room}}</td>
+          <td class="py-3 fw-bold text-dark small">{{amount}}</td>
+          <td class="py-3 text-muted small">{{dueDate}}</td>
+          <td class="py-3 text-muted small">{{paidDate}}</td>
+          <td class="py-3 text-muted small text-center">{{method}}</td>
+          <td class="py-3 text-center">
+            
+            <span class="badge rounded-pill px-3 py-2 fw-normal small
+              {{#if (eq status "Paid")}}bg-success bg-opacity-10 text-success
+              {{else if (eq status "Pending")}}bg-warning bg-opacity-10 text-warning
+              {{else}}bg-danger bg-opacity-10 text-danger{{/if}}">
+              
+              {{#if (eq status "Paid")}}<i class="bi bi-check-lg me-1"></i>
+              {{else if (eq status "Pending")}}<i class="bi bi-clock me-1"></i>
+              {{else}}<i class="bi bi-x-lg me-1"></i>{{/if}}
+              {{status}}
+            </span>
+
+          </td>
+          <td class="py-3 text-center">
+            <a href="#" class="text-dark fw-bold text-decoration-none small">View</a>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
