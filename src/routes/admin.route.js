@@ -35,14 +35,15 @@ router.get('/accounts', (req, res) => {
   });
 });
 router.get('/payments', (req, res) => {
-  const { payments } = require('../data/mockData'); 
+  const { adminPayments, activeRooms } = require('../data/mockData');
 
-  res.render('admin/payments', { 
+  res.render('admin/payments', {
     layout: 'admin',
-    payments, 
-    isPayments: true 
+    isPayments: true, 
+    payments: adminPayments, 
+    rooms: activeRooms       
   });
-});
+});;
 
 router.get('/requests', (req, res) => {
   const { requests } = require('../data/mockData'); 

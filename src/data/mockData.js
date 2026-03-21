@@ -104,5 +104,35 @@ module.exports = {
     status: "Paid",
     method: "Bank Transfer",
     paidDate: "2/28/2026"
-  }]
+  }],
+
+  activeRooms : [
+  { id: "102", tenantName: "Jane Tenant" },
+  { id: "202", tenantName: "Bob Smith" },
+  { id: "305", tenantName: "Charlie Brown" }
+],
+
+  adminPayments : [
+  {
+    id: "INV-001",
+    tenantName: "Jane Tenant",
+    room: "Room 102",
+    amount: 850,
+    dueDate: "4/1/2026",
+    paidDate: "3/28/2026",
+    method: "Bank Transfer",
+    status: "Paid"
+  },
+  {
+    id: "INV-002",
+    tenantName: "Bob Smith",
+    room: "Room 202",
+    amount: 780,
+    dueDate: "4/1/2026",
+    paidDate: "-",
+    method: "-",
+    status: "Pending"
+  }
+]
+
 };
