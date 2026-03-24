@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const exphbs = require('express-handlebars');
@@ -8,13 +9,17 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.engine('hbs', exphbs.engine({
+app.engine('.hbs', exphbs.engine({ 
   extname: '.hbs',
-  layoutsDir: path.join(__dirname, 'views/layouts'),
-  partialsDir: path.join(__dirname, 'views/partials'),
-  defaultLayout: 'main',
   helpers: {
-    eq: (a, b) => a === b
+    eq: (a, b) => a === b, 
+    formatVND: function(price) {
+      if (!price) return '0 ₫';
+      return new Intl.NumberFormat('vi-VN', { 
+        style: 'currency', 
+        currency: 'VND' 
+      }).format(price);
+    }
   }
 }));
 app.set('view engine', 'hbs');
