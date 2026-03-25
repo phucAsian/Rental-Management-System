@@ -1,44 +1,64 @@
 const express = require('express');
 const router = express.Router();
+const db = require('../config/db');
+const bcrypt = require('bcryptjs');
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const { phone, password } = req.body || {};
 
   if (!phone || !password) {
-    return res.send('Thiếu dữ liệu');
+    return res.status(400).send('Thiếu dữ liệu');
   }
 
-  if (phone === '1234567890' && password === 'landlord') {
-    return res.redirect('/admin');
-  }
+  try {
+    const user = await db('users').where({ phone }).first();
 
-  if (phone === '0987654321' && password === 'tenant') {
-    return res.redirect('/tenant');
-  }
+    if (!user) {
+      return res.status(401).send('Sai tài khoản');
+    }
 
-  return res.send('Sai tài khoản');
+    const stored = user.password_hash || '';
+
+    let passwordMatches = false;
+
+    // If stored password looks like a bcrypt hash, use bcrypt.compare
+    if (stored.startsWith('$2')) {
+      passwordMatches = await bcrypt.compare(password, stored);
+    } else {
+      // fallback: direct compare (for existing test data)
+      passwordMatches = stored === password;
+    }
+
+    if (!passwordMatches) {
+      return res.status(401).send('Sai tài khoản');
+    }
+
+    req.session.user = {
+      id: user.id,
+      role: user.role,
+      full_name: user.full_name,
+      phone: user.phone
+    };
+
+    if (user.role === 'Tenant') return res.redirect('/tenant');
+    if (user.role === 'Admin') return res.redirect('/admin');
+
+    return res.redirect('/');
+
+  } catch (err) {
+    console.error('Auth error:', err);
+    return res.status(500).send('Lỗi server');
+  }
 });
-
-router.post('/login', (req, res) => {
-  const { phone, password } = req.body || {};
-
-  if (!phone || !password) {
-    return res.send('Thiếu dữ liệu');
-  }
-
-  if (phone === '1234567890' && password === 'landlord') {
-    return res.redirect('/admin');
-  }
-
-  if (phone === '0987654321' && password === 'tenant') {
-    return res.redirect('/tenant');
-  }
-
-  return res.send('Sai tài khoản');
-});
-
 
 router.get('/logout', (req, res) => {
-  res.redirect('/');
+  if (req.session) {
+    req.session.destroy(err => {
+      return res.redirect('/');
+    });
+  } else {
+    return res.redirect('/');
+  }
 });
+
 module.exports = router;

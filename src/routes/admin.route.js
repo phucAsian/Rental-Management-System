@@ -1,5 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../middleware/auth');
+
+// Protect all admin routes
+router.use(auth.ensureAuthenticated, auth.ensureRole('Admin'));
 
 router.get('/', (req, res) => {
   res.redirect('/admin/rooms');
