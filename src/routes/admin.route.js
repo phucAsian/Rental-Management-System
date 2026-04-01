@@ -64,8 +64,6 @@ router.post('/rooms/delete/:id', async (req, res) => {
     }
 });
 
-
-
 router.get('/accounts', async (req, res) => {
     try {
         const accounts = await db('users').orderBy('created_at', 'desc');
