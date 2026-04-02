@@ -73,7 +73,8 @@ router.post('/forgot', async (req, res) => {
     try {
       await requestOTP({
         email,
-        subject: 'Mã OTP đặt lại mật khẩu'
+        subject: 'Mã OTP đặt lại mật khẩu',
+        user_id: user.id
       });
       return res.status(200).send('OTP đã được gửi tới email nếu tồn tại');
     } catch (e) {
@@ -95,7 +96,7 @@ router.post('/forgot/verify', async (req, res) => {
   if (!email || !code || !newPassword) return res.status(400).send('Thiếu dữ liệu');
 
   try {
-    const ok = verifyOTP({ email, code });
+    const ok = await verifyOTP({ email, code });
     if (!ok) return res.status(400).send('OTP không hợp lệ hoặc đã hết hạn');
 
     const hash = bcrypt.hashSync(newPassword, 8);
