@@ -19,6 +19,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
+
 router.get('/', (req, res) => {
     res.redirect('/admin/rooms'); 
 });
