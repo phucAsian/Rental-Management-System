@@ -42,7 +42,7 @@ exports.updateProfile = async (req, res) => {
             return res.redirect('/');
         }
 
-        let { full_name, phone, dob, hometown } = req.body;
+        let { full_name, phone, dob, hometown, id_card } = req.body;
         const userId = req.session.user.id;
         
         if (!dob || dob.trim() === '') {
@@ -62,6 +62,7 @@ exports.updateProfile = async (req, res) => {
                 phone,
                 dob,        
                 hometown,
+                id_card,
                 avatar_url: avatarUrl
             });
 

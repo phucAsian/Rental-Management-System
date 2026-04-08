@@ -42,10 +42,10 @@
                     <label class="form-label fw-bold small text-uppercase">Full Name</label>
                     <input type="text" name="full_name" class="form-control" value="{{user.full_name}}" disabled required>
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold small text-uppercase">ID Card(Lock)</label>
-                    <input type="text" name="id_card" class="form-control bg-light" value="{{user.id_card}}" readonly>
-                </div>
+            <div class="col-md-6">
+                    <label class="form-label fw-bold small text-uppercase">ID Card (CCCD)</label>
+                    <input type="text" name="id_card" class="form-control" value="{{user.id_card}}" disabled required>
+            </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold small text-uppercase">Email (Khóa)</label>
                     <input type="email" name="email" class="form-control bg-light" value="{{user.email}}" readonly>
