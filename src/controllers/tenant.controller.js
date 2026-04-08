@@ -1,4 +1,3 @@
-const data = require('../data/mockData');
 
 exports.requestPage = (req, res) => {
     res.render('tenant/request', {
