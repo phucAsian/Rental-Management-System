@@ -26,10 +26,20 @@
     document.getElementById("loginModal").style.display = "flex";
     document.getElementById("loginFormContainer").style.display = "block";
     document.getElementById("forgotPasswordFormContainer").style.display = "none";
+    // clear any previous values/messages when opening
+    clearLoginFields();
+    clearForgotFormFields();
+    clearForgotMessage();
+    const lm = document.getElementById('loginMsg'); if (lm) { lm.style.display='none'; lm.textContent=''; }
   }
 
   function closeModal() {
     document.getElementById("loginModal").style.display = "none";
+    // clear fields when closing as well
+    clearLoginFields();
+    clearForgotFormFields();
+    clearForgotMessage();
+    const lm = document.getElementById('loginMsg'); if (lm) { lm.style.display='none'; lm.textContent=''; }
   }
 
   function toggleForgotForm() {
@@ -39,9 +49,15 @@
     if (loginForm.style.display === "none") {
       loginForm.style.display = "block";
       forgotForm.style.display = "none";
+      // clear forgot form when switching back to login
+      clearForgotFormFields();
+      clearForgotMessage();
+      const lm = document.getElementById('loginMsg'); if (lm) { lm.style.display='none'; lm.textContent=''; }
     } else {
       loginForm.style.display = "none";
       forgotForm.style.display = "block";
+      // clear login fields when showing forgot form
+      clearLoginFields();
     }
   }
 </script>
@@ -50,11 +66,9 @@
   // Request OTP from the modal forgot-password form
   let otpCooldownTimer = null;
   function showForgotMessage(text, isError = true) {
-    const el = document.getElementById('forgotMsg');
-    if (!el) return;
-    el.style.display = 'block';
-    el.style.color = isError ? '#d63384' : '#198754';
-    el.textContent = text;
+    // Use global alert box instead of inline message
+    // showAuthAlert(title, subtitle, message, isError)
+    showAuthAlert('Notice', '', text, isError);
   }
 
   function clearForgotMessage() {
@@ -93,7 +107,7 @@
       }
 
       if (!email) {
-          showForgotMessage('Vui lòng nhập email', true);
+          showForgotMessage('Please enter your email', true);
         return;
       }
 
@@ -108,23 +122,22 @@
         body: JSON.stringify({ email })
       });
 
-      const text = await res.text();
-      if (res.status === 200) {
-        showForgotMessage('OTP đã được gửi — kiểm tra email (và thư rác).', false);
+      const data = await res.json().catch(() => null);
+      if (res.ok && data && data.success) {
+        showAuthAlert('OTP Sent', '', data.message || 'OTP sent to your email', false);
         startOtpCooldown(60);
         document.getElementById('forgotOtp').focus();
       } else if (res.status === 429) {
-        showForgotMessage(text || 'Vui lòng chờ trước khi yêu cầu mã mới', true);
-        // server indicates cooldown remaining; disable button for 5s to avoid flood
+        showAuthAlert('Too Many Requests', '', (data && data.message) || 'Please wait before requesting another code', true);
         startOtpCooldown(5);
       } else {
-        showForgotMessage(text || 'Lỗi gửi OTP, thử lại sau', true);
+        showAuthAlert('Error', '', (data && data.message) || 'Error sending OTP, try again later', true);
         btn.disabled = false;
         btn.textContent = 'Get OTP';
       }
     } catch (err) {
       console.error('requestOtpFromModal error', err);
-      showForgotMessage('Lỗi kết nối, kiểm tra server', true);
+      showAuthAlert('Connection error', '', 'Check the server', true);
       btn.disabled = false;
       btn.textContent = 'Get OTP';
     }
@@ -149,4 +162,162 @@
       btn.textContent = `Wait ${remaining}s`;
     }, 1000);
   }
+</script>
+
+<script>
+  // Utility: clear input fields in forgot form
+  function clearForgotFormFields() {
+    const container = document.getElementById('forgotPasswordFormContainer');
+    if (!container) return;
+    const email = container.querySelector('input[name="email"]'); if (email) email.value = '';
+    const otp = container.querySelector('input[name="code"]'); if (otp) otp.value = '';
+    const np = container.querySelector('input[name="newPassword"]'); if (np) np.value = '';
+    const cp = container.querySelector('input[name="confirmPassword"]'); if (cp) cp.value = '';
+    const btn = document.getElementById('btnGetOtp'); if (btn) { btn.disabled = false; btn.textContent = 'Get OTP'; }
+    clearForgotMessage();
+  }
+
+  // Utility: clear login form fields
+  function clearLoginFields() {
+    const container = document.getElementById('loginFormContainer');
+    if (!container) return;
+    const phone = container.querySelector('input[name="phone"]'); if (phone) phone.value = '';
+    const pw = container.querySelector('input[name="password"]'); if (pw) pw.value = '';
+    const lm = document.getElementById('loginMsg'); if (lm) { lm.style.display='none'; lm.textContent=''; }
+  }
+</script>
+
+<!-- Global auth alert box -->
+<div id="authAlertOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:2050;align-items:center;justify-content:center;">
+  <div id="authAlertBox" style="background:#fff;padding:18px 18px 14px;border-radius:10px;max-width:460px;width:92%;box-shadow:0 8px 30px rgba(0,0,0,0.25);">
+    <h5 id="authAlertTitle" style="margin:0 0 6px;font-weight:700">Notice</h5>
+    <div id="authAlertSubtitle" style="color:#6c757d;margin:0 0 8px;font-size:0.95rem"> </div>
+    <div id="authAlertMessage" style="color:#333;margin-bottom:14px;line-height:1.4"></div>
+    <div style="text-align:right"><button id="authAlertOk" class="btn btn-primary">OK</button></div>
+  </div>
+</div>
+
+<script>
+  // optional onOk callback will be executed when user presses OK
+  let authAlertOnOk = null;
+  function showAuthAlert(title, subtitle, message, isError = true, onOk) {
+    const overlay = document.getElementById('authAlertOverlay');
+    const t = document.getElementById('authAlertTitle');
+    const s = document.getElementById('authAlertSubtitle');
+    const m = document.getElementById('authAlertMessage');
+    if (!overlay || !t || !m || !s) return;
+    t.textContent = title || 'Notice';
+    s.textContent = subtitle || '';
+    m.textContent = message || '';
+    s.style.color = '#6c757d';
+    m.style.color = isError ? '#d63384' : '#198754';
+    overlay.style.display = 'flex';
+    authAlertOnOk = (typeof onOk === 'function') ? onOk : null;
+    const ok = document.getElementById('authAlertOk');
+    if (ok && !ok._authAlertAttached) {
+      ok.addEventListener('click', () => {
+        // call provided callback (if any) when OK clicked
+        try {
+          if (authAlertOnOk) authAlertOnOk();
+        } catch (e) {
+          console.error('authAlertOnOk error', e);
+        }
+        authAlertOnOk = null;
+        hideAuthAlert();
+      });
+      ok._authAlertAttached = true;
+    }
+  }
+
+  function hideAuthAlert() {
+    const overlay = document.getElementById('authAlertOverlay');
+    if (!overlay) return;
+    overlay.style.display = 'none';
+  }
+</script>
+
+<script>
+  // Generic login message in modal
+  function showLoginMessage(text, isError = true) {
+    const el = document.getElementById('loginMsg');
+    if (!el) return;
+    el.style.display = 'block';
+    el.style.color = isError ? '#d63384' : '#198754';
+    el.textContent = text;
+  }
+
+  // Intercept login form submit to show message instead of blank page
+  (function attachAuthHandlers() {
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+      loginForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        showLoginMessage('', false);
+        const form = e.currentTarget;
+        const fd = new FormData(form);
+        const body = { phone: fd.get('phone'), password: fd.get('password') };
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Logging in...'; }
+        try {
+          const res = await fetch(form.action, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+          const data = await res.json().catch(() => null);
+          if (res.ok && data && data.success) {
+            window.location.href = data.redirect || '/';
+            return;
+          }
+          // Specific wording for credential errors
+          if (data && data.message === 'Wrong credentials') {
+            showAuthAlert('Wrong Credentials', 'Invalid username or password', '', true);
+          } else {
+            showAuthAlert('Login failed', '', (data && data.message) || 'Login failed', true);
+          }
+        } catch (err) {
+          console.error('Login error', err);
+          showLoginMessage('Connection error, try again', true);
+        } finally {
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Login'; }
+        }
+      });
+    }
+
+    const verifyForm = document.getElementById('forgotVerifyForm');
+    if (verifyForm) {
+      verifyForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        clearForgotMessage();
+        const fd = new FormData(e.currentTarget);
+        const email = fd.get('email');
+        const code = fd.get('code');
+        const newPassword = fd.get('newPassword');
+        const confirm = fd.get('confirmPassword');
+        if (!email || !code || !newPassword) {
+          showForgotMessage('Please fill in all fields', true);
+          return;
+        }
+        if (newPassword !== confirm) {
+          showForgotMessage('Passwords do not match', true);
+          return;
+        }
+        const btn = verifyForm.querySelector('button[type="submit"]');
+        if (btn) { btn.disabled = true; btn.textContent = 'Updating...'; }
+        try {
+          const res = await fetch(verifyForm.action, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, code, newPassword }) });
+          const data = await res.json().catch(() => null);
+          if (res.ok && data && data.success) {
+              showAuthAlert('Password updated', '', data.message || 'Your password has been updated', false, function () {
+                // switch back to login form when user presses OK
+                toggleForgotForm();
+              });
+            return;
+          }
+            showAuthAlert('Update failed', '', (data && data.message) || 'Failed to update password', true);
+        } catch (err) {
+          console.error('Reset password error', err);
+          showForgotMessage('Connection error, try again', true);
+        } finally {
+          if (btn) { btn.disabled = false; btn.textContent = 'Update Password'; }
+        }
+      });
+    }
+  })();
 </script>
