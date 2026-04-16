@@ -1,16 +1,16 @@
 const db = require('../config/db');
 const RoomFactory = require('../factories/roomFactory');
-const { loggingDecorator } = require('../utils/roomDecorators');
+const { withAuth } = require('../utils/withAuth');
 
 class RoomService {
 
-  static async createRoom(roomData, fileData) {
+  static async createRoom(user, roomData, fileData) {
     const existingRoom = await db('rooms')
       .where('room_number', roomData.room_number)
       .first();
 
     if (existingRoom) {
-      throw new Error("Số phòng đã tồn tại!");
+      throw new Error("Room number already exists!");
     }
 
     let imageUrl = null;
@@ -27,7 +27,7 @@ class RoomService {
     return RoomFactory.fromDatabase(insertedRoom);
   }
 
-  static async updateRoom(roomId, updateData, fileData) {
+  static async updateRoom(user, roomId, updateData, fileData) {
     try {
       const updatedFields = {
         floor: parseInt(updateData.floor),
@@ -37,7 +37,7 @@ class RoomService {
       };
 
       if (updatedFields.floor < 1 || updatedFields.floor > 6) {
-        throw new Error("Số tầng phải từ 1 đến 6!");
+        throw new Error("Floor must be between 1 and 6!");
       }
 
       if (fileData) {
@@ -54,23 +54,23 @@ class RoomService {
       return updatedRoom;
 
     } catch (error) {
-      throw new Error("Lỗi khi cập nhật phòng!");
+      throw new Error("Error updating room!");
     }
   }
-    static async deleteRoom(roomId) {
+    static async deleteRoom(user, roomId) {
     try {
       const roomData = await db('rooms')
         .where('room_number', roomId)
         .first();
 
       if (!roomData) {
-        throw new Error("Phòng không tồn tại!");
+        throw new Error("Room does not exist!");
       }
 
       const room = RoomFactory.fromDatabase(roomData);
 
       if (!room.canDelete()) {
-        throw new Error("Không thể xóa phòng với trạng thái hiện tại!");
+        throw new Error("Cannot delete room in its current status!");
       }
 
       await db('rooms')
@@ -80,18 +80,18 @@ class RoomService {
       return true;
 
     } catch (error) {
-      throw new Error("Lỗi khi xóa phòng!");
+      throw new Error("Error deleting room!");
     }
   }
 
-  static async rentRoom(roomId) {
+  static async rentRoom(user, roomId) {
     try {
       const roomData = await db('rooms')
         .where('room_number', roomId)
         .first();
 
       if (!roomData) {
-        throw new Error("Phòng không tồn tại!");
+        throw new Error("Room does not exist!");
       }
 
       const room = RoomFactory.fromDatabase(roomData);
@@ -104,18 +104,18 @@ class RoomService {
 
       return room;
     } catch (error) {
-      throw new Error("Lỗi khi thuê phòng!");
+      throw new Error("Error renting room!");
     }
   }
 
-  static async releaseRoom(roomId) {
+  static async releaseRoom(user, roomId) {
     try {
       const roomData = await db('rooms')
         .where('room_number', roomId)
         .first();
 
       if (!roomData) {
-        throw new Error("Phòng không tồn tại!");
+        throw new Error("Room does not exist!");
       }
 
       const room = RoomFactory.fromDatabase(roomData);
@@ -128,18 +128,18 @@ class RoomService {
 
       return room;
     } catch (error) {
-      throw new Error("Lỗi khi trả phòng!");
+      throw new Error("Error releasing room!");
     }
   }
 
-  static async startMaintenance(roomId) {
+  static async startMaintenance(user, roomId) {
     try {
       const roomData = await db('rooms')
         .where('room_number', roomId)
         .first();
 
       if (!roomData) {
-        throw new Error("Phòng không tồn tại!");
+        throw new Error("Room does not exist!");
       }
 
       const room = RoomFactory.fromDatabase(roomData);
@@ -152,18 +152,18 @@ class RoomService {
 
       return room;
     } catch (error) {
-      throw new Error("Lỗi khi bắt đầu bảo trì!");
+      throw new Error("Error starting maintenance!");
     }
   }
 
-  static async endMaintenance(roomId) {
+  static async endMaintenance(user, roomId) {
     try {
       const roomData = await db('rooms')
         .where('room_number', roomId)
         .first();
 
       if (!roomData) {
-        throw new Error("Phòng không tồn tại!");
+        throw new Error("Room does not exist!");
       }
 
       const room = RoomFactory.fromDatabase(roomData);
@@ -176,19 +176,19 @@ class RoomService {
 
       return room;
     } catch (error) {
-      throw new Error("Lỗi khi kết thúc bảo trì!");
+      throw new Error("Error ending maintenance!");
     }
   }
 }
 
 const Decorated = {
-  createRoom: loggingDecorator(RoomService.createRoom, 'roomService.createRoom'),
-  updateRoom: loggingDecorator(RoomService.updateRoom, 'roomService.updateRoom'),
-  deleteRoom: loggingDecorator(RoomService.deleteRoom, 'roomService.deleteRoom'),
-  rentRoom: loggingDecorator(RoomService.rentRoom, 'roomService.rentRoom'),
-  releaseRoom: loggingDecorator(RoomService.releaseRoom, 'roomService.releaseRoom'),
-  startMaintenance: loggingDecorator(RoomService.startMaintenance, 'roomService.startMaintenance'),
-  endMaintenance: loggingDecorator(RoomService.endMaintenance, 'roomService.endMaintenance'),
+  createRoom: withAuth('Admin', RoomService.createRoom),
+  updateRoom: withAuth('Admin', RoomService.updateRoom),
+  deleteRoom: withAuth('Admin', RoomService.deleteRoom),
+  rentRoom: withAuth('Admin', RoomService.rentRoom),
+  releaseRoom: withAuth('Admin', RoomService.releaseRoom),
+  startMaintenance: withAuth('Admin', RoomService.startMaintenance),
+  endMaintenance: withAuth('Admin', RoomService.endMaintenance),
   
   Raw: RoomService
 };

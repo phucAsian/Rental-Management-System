@@ -36,20 +36,21 @@ router.get('/rooms', async (req, res) => {
         
         res.render('admin/rooms', { 
             layout: 'admin',
+          isRooms: true,
             rooms: rooms,
             error: req.query.error,
             success: req.query.success
         });
     } catch (error) {
-        console.error("Lỗi lấy danh sách phòng:", error);
-        res.status(500).send("Lỗi server!");
+        console.error("Error fetching room list:", error);
+        res.status(500).send("Server error!");
     }
 });
 router.post('/rooms/add', upload.single('room_image'), async (req, res) => {
     try {
-        await RoomService.createRoom(req.body, req.file);
+      await RoomService.createRoom(req.user, req.body, req.file);
 
-        res.redirect('/admin/rooms?success=Thêm phòng mới thành công!');
+        res.redirect('/admin/rooms?success=New room added successfully!');
     } catch (error) {
         res.redirect('/admin/rooms?error=' + encodeURIComponent(error.message));
     }
@@ -57,8 +58,8 @@ router.post('/rooms/add', upload.single('room_image'), async (req, res) => {
 
 router.post('/rooms/edit/:id', upload.single('room_image'), async (req, res) => {
     try {
-        await RoomService.updateRoom(req.params.id, req.body, req.file);
-        res.redirect('/admin/rooms?success=Cập nhật phòng thành công!');
+    await RoomService.updateRoom(req.user, req.params.id, req.body, req.file);
+        res.redirect('/admin/rooms?success=Room updated successfully!');
     } catch (error) {
         res.redirect('/admin/rooms?error=' + encodeURIComponent(error.message));
     }
@@ -66,8 +67,8 @@ router.post('/rooms/edit/:id', upload.single('room_image'), async (req, res) => 
 
 router.post('/rooms/delete/:id', async (req, res) => {
     try {
-        await RoomService.deleteRoom(req.params.id);
-        res.redirect('/admin/rooms?success=Đã xóa phòng thành công!');
+      await RoomService.deleteRoom(req.user, req.params.id);
+        res.redirect('/admin/rooms?success=Room deleted successfully!');
     } catch (error) {
         res.redirect('/admin/rooms?error=' + encodeURIComponent(error.message));
     }
@@ -93,20 +94,21 @@ router.get("/rooms", async (req, res) => {
 
     res.render("admin/rooms", {
       layout: "admin",
+      isRooms: true,
       rooms: rooms,
       error: req.query.error,
       success: req.query.success,
     });
   } catch (error) {
-    console.error("Lỗi lấy danh sách phòng:", error);
-    res.status(500).send("Lỗi server!");
+    console.error("Error fetching room list:", error);
+    res.status(500).send("Server error!");
   }
 });
 router.post("/rooms/add", upload.single("room_image"), async (req, res) => {
   try {
-    await RoomService.createRoom(req.body, req.file);
+  await RoomService.createRoom(req.user, req.body, req.file);
 
-    res.redirect("/admin/rooms?success=Thêm phòng mới thành công!");
+    res.redirect("/admin/rooms?success=New room added successfully!");
   } catch (error) {
     res.redirect("/admin/rooms?error=" + encodeURIComponent(error.message));
   }
@@ -117,8 +119,8 @@ router.post(
   upload.single("room_image"),
   async (req, res) => {
     try {
-      await RoomService.updateRoom(req.params.id, req.body, req.file);
-      res.redirect("/admin/rooms?success=Cập nhật phòng thành công!");
+    await RoomService.updateRoom(req.user, req.params.id, req.body, req.file);
+      res.redirect("/admin/rooms?success=Room updated successfully!");
     } catch (error) {
       res.redirect("/admin/rooms?error=" + encodeURIComponent(error.message));
     }
@@ -127,8 +129,8 @@ router.post(
 
 router.post("/rooms/delete/:id", async (req, res) => {
   try {
-    await RoomService.deleteRoom(req.params.id);
-    res.redirect("/admin/rooms?success=Đã xóa phòng thành công!");
+    await RoomService.deleteRoom(req.user, req.params.id);
+    res.redirect("/admin/rooms?success=Room deleted successfully!");
   } catch (error) {
     res.redirect("/admin/rooms?error=" + encodeURIComponent(error.message));
   }
@@ -142,17 +144,17 @@ router.get("/accounts", async (req, res) => {
       .where("status", "Available")
       .orderBy("room_number", "asc");
 
-
     res.render("admin/accounts", {
       layout: "admin",
+      isAccounts: true,
       accounts: accounts,
       availableRooms: availableRooms,
       error: req.query.error,
       success: req.query.success,
     });
   } catch (error) {
-    console.error("Lỗi lấy danh sách tài khoản:", error);
-    res.status(500).send("Lỗi server!");
+    console.error("Error fetching account list:", error);
+    res.status(500).send("Server error!");
   }
 });
 
@@ -160,7 +162,7 @@ router.post("/accounts/add", async (req, res) => {
   try {
     await AccountService.createAccount(req.body);
     res.redirect(
-      "/admin/accounts?success=Đã thêm tài khoản và gán phòng thành công!",
+      "/admin/accounts?success=Account added and room assigned successfully!",
     );
   } catch (error) {
     res.redirect("/admin/accounts?error=" + encodeURIComponent(error.message));
@@ -170,9 +172,9 @@ router.post("/accounts/add", async (req, res) => {
 router.post("/accounts/edit/:id", async (req, res) => {
   try {
     await AccountService.updateAccount(req.params.id, req.body);
-    res.redirect("/admin/accounts?success=Cập nhật tài khoản thành công!");
+    res.redirect("/admin/accounts?success=Account updated successfully!");
   } catch (error) {
-    res.redirect("/admin/accounts?error=Lỗi cập nhật!");
+    res.redirect("/admin/accounts?error=Update failed!");
   }
 });
 
@@ -180,7 +182,7 @@ router.post("/accounts/delete/:id", async (req, res) => {
   try {
     await AccountService.deleteAccount(req.params.id);
     res.redirect(
-      "/admin/accounts?success=Đã xóa tài khoản vĩnh viễn và giải phóng phòng thành công!",
+      "/admin/accounts?success=Account permanently deleted and room released successfully!",
     );
   } catch (error) {
     res.redirect("/admin/accounts?error=" + encodeURIComponent(error.message));
@@ -193,11 +195,12 @@ router.get("/tenants", async (req, res) => {
 
     res.render("admin/tenants", {
       layout: "admin",
+      isTenants: true,
       tenants: tenants,
     });
   } catch (error) {
-    console.error("Lỗi lấy danh sách tenant:", error);
-    res.status(500).send("Lỗi server!");
+    console.error("Error fetching tenant list:", error);
+    res.status(500).send("Server error!");
   }
 });
 
@@ -219,7 +222,6 @@ router.get("/payments", async (req, res) => {
         "rooms.room_number as room"
       )
       .orderBy("invoices.created_at", "desc");
-     // ✅ TÍNH STATS
     let paidTotal = 0;
     let pendingTotal = 0;
     let overdueTotal = 0;
@@ -241,7 +243,7 @@ router.get("/payments", async (req, res) => {
       .whereNotNull("rooms.tenant_id");
     
     for (let room of rooms) {
-      if (!room.tenant_id) {  // ✅ skip phòng không có tenant
+      if (!room.tenant_id) {
         room.otherCost = 0;
         continue;
       }
@@ -255,6 +257,7 @@ router.get("/payments", async (req, res) => {
 
     res.render("admin/payments", {
       layout: "admin",
+      isPayments: true,
       payments: payments,
       rooms: rooms,
       stats: {
@@ -267,7 +270,7 @@ router.get("/payments", async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).send("Lỗi server");
+    res.status(500).send("Server error");
   }
 });
 router.get("/payments/:id", async (req, res) => {
@@ -282,16 +285,79 @@ router.get("/payments/:id", async (req, res) => {
   
   res.render("admin/payment-detail", { 
       layout: "admin", 
+      isPayments: true,
       invoice: invoice 
   }); 
 });
 router.post("/payments/:id/delete", async (req, res) => {
   try {
     await db("invoices").where({ id: req.params.id }).delete();
-    res.redirect("/admin/payments?success=Xóa hóa đơn thành công!");
+    res.redirect("/admin/payments?success=Invoice deleted successfully!");
   } catch (err) {
     console.error(err);
-    res.redirect("/admin/payments?error=Lỗi xóa hóa đơn!");
+    res.redirect("/admin/payments?error=Failed to delete invoice!");
+  }
+});
+router.get("/inquiries", async (req, res) => {
+  try {
+    const inquiries = await db("guest_contacts")
+      .join("rooms", "guest_contacts.room_id", "rooms.id")
+      .select("guest_contacts.*", "rooms.room_number")
+      .orderByRaw("CASE WHEN guest_contacts.status = 'Pending' THEN 1 ELSE 2 END")
+      .orderBy("guest_contacts.created_at", "desc");
+
+    res.render("admin/inquiries", {
+      layout: "admin",
+      inquiries: inquiries,
+      success: req.query.success
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+router.post("/inquiries/:id/contacted", async (req, res) => {
+  try {
+    await db("guest_contacts").where("id", req.params.id).update({ status: "Contacted" });
+res.redirect("/admin/inquiries?success=Marked as contacted successfully!");  } catch (err) {
+    res.redirect("/admin/inquiries");
+  }
+});
+
+router.get("/revenue", async (req, res) => {
+  try {
+    const invoices = await db('invoices').select('*');
+
+    let totalRevenue = 0;
+    let pendingRevenue = 0;
+    let paidCount = 0;
+
+    let monthlyRevenue = new Array(12).fill(0);
+
+    invoices.forEach(inv => {
+      const amount = Number(inv.amount) || 0;
+      const date = new Date(inv.created_at);
+      const month = date.getMonth(); 
+      if (inv.status === 'Paid') {
+        totalRevenue += amount;
+        paidCount++;
+        monthlyRevenue[month] += amount; 
+      } else if (inv.status === 'Pending') {
+        pendingRevenue += amount;
+      }
+    });
+
+    res.render("admin/revenue", {
+      layout: "admin",
+      isRevenue: true,
+      totalRevenue,
+      pendingRevenue,
+      paidCount,
+      monthlyRevenue: JSON.stringify(monthlyRevenue) 
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Lỗi tải trang doanh thu");
   }
 });
 module.exports = router;

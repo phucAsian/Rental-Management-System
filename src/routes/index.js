@@ -9,6 +9,7 @@ router.use('/', require('./home.route'));
 
 router.get('/', async (req, res) => {
   try {
+    const keyword = (req.query.keyword || '').trim();
     const floorQuery = req.query.floor || 'all';
     const statusQuery = req.query.status || 'all';
     const sortPrice = req.query.sortPrice || 'default';
@@ -21,6 +22,10 @@ router.get('/', async (req, res) => {
 
     if (statusQuery !== 'all') {
       query = query.where('status', statusQuery);
+    }
+
+    if (keyword) {
+      query = query.whereRaw('CAST(room_number AS TEXT) ILIKE ?', [`%${keyword}%`]);
     }
 
     if (sortPrice === 'asc') {
@@ -45,14 +50,15 @@ router.get('/', async (req, res) => {
     res.render('home/index', { 
       layout: 'main', 
       rooms: formattedRooms,
+      currentKeyword: keyword,
       currentFloor: floorQuery,
       currentStatus: statusQuery,
       currentSort: sortPrice
     });
 
   } catch (err) {
-    console.error("Lỗi lấy dữ liệu phòng:", err);
-    res.status(500).send("Lỗi Server!");
+    console.error("Error fetching room data:", err);
+    res.status(500).send("Server error!");
   }
 });
 
@@ -63,7 +69,7 @@ router.get('/room/:id', async (req, res) => {
     const room = await db('rooms').where('room_number', roomId).first();
 
     if (!room) {
-      return res.status(404).send('Không tìm thấy phòng trọ này!');
+      return res.status(404).send('This room could not be found!');
     }
 
     let tenantName = null;
@@ -96,8 +102,25 @@ router.get('/room/:id', async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Lỗi lấy chi tiết phòng:", err);
-    res.status(500).send("Lỗi Server!");
+    console.error("Error fetching room details:", err);
+    res.status(500).send("Server error!");
+  }
+});
+
+router.post('/contact-landlord', async (req, res) => {
+  try {
+    const { guest_name, guest_phone, room_number } = req.body;
+    const room = await db('rooms').where('room_number', room_number).first();
+    if (room) {
+      await db('guest_contacts').insert({
+        guest_name,
+        guest_phone,
+        room_id: room.id
+      });
+    }
+res.send(`<script>alert('Request sent successfully! Our admin will contact you shortly.'); window.location.href='/room/${room_number}';</script>`);  } catch (err) {
+    console.error("Error sending contact request:", err);
+    res.status(500).send("Server error!");
   }
 });
 

@@ -1,10 +1,10 @@
-<div class="container-fluid p-0">
+<div class="container-fluid p-0 home-page">
   <div class="layout-wrapper">
 
     <div class="main-column"> 
       <div class="main-column-content">
         
-        <div class="alert alert-primary bg-white border-primary-subtle rounded-4 mb-4 p-4 shadow-sm">
+        <div class="alert alert-primary bg-white border-primary-subtle rounded-4 mb-4 p-4 shadow-sm rooms-hero">
           <h2 class="fw-bold mb-1 m-0">Available Rooms</h2>
           <p class="text-muted mb-0">Browse through our collection of rental rooms</p>
         </div>
@@ -13,7 +13,7 @@
           {{#if rooms.length}}
             {{#each rooms}}
             <div class="col-xxl-3 col-xl-4 col-lg-6 col-md-6"> 
-              <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative bg-white">
+              <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden position-relative bg-white room-item-card">
                 
                 <span class="badge rounded-pill position-absolute top-0 end-0 m-3 px-3 py-2 fw-normal
                   {{#if (eq status "Available")}}bg-success bg-opacity-75 text-white
@@ -50,10 +50,21 @@
 
     <div class="sidebar-column"> 
       
-      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white search-panel">
         <h5 class="fw-bold mb-4 m-0 text-dark">Your search</h5>
         
         <form action="/" method="GET">
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold small text-muted">Room</label>
+            <input
+              type="text"
+              name="keyword"
+              class="form-control border-1 border-secondary-subtle bg-light py-2 shadow-none rounded-3"
+              placeholder="Search by room number"
+              value="{{currentKeyword}}"
+            >
+          </div>
           
           <div class="mb-3">
             <label class="form-label fw-semibold small text-muted">Floor</label>
