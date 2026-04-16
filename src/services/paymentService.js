@@ -1,27 +1,39 @@
 class BankTransferStrategy {
     process(amount) {
-        // Logic giả lập xử lý chuyển khoản ngân hàng
-        return { success: true, method: 'Bank Transfer', message: `Chuyển khoản thành công: $${amount}` };
+        return {
+            success: true,
+            method: 'Bank Transfer',
+            message: `Transfer successful: $${amount}`
+        };
     }
 }
 
 class CreditCardStrategy {
     process(amount) {
-        // Logic giả lập xử lý thẻ tín dụng
-        return { success: true, method: 'Credit Card', message: `Thanh toán thẻ thành công: $${amount}` };
+        return {
+            success: true,
+            method: 'Credit Card',
+            message: `Card payment successful: $${amount}`
+        };
+    }
+}
+
+class StrategyFactory {
+    static create(method) {
+        switch (method) {
+            case 'Bank Transfer':
+                return new BankTransferStrategy();
+            case 'Credit Card':
+                return new CreditCardStrategy();
+            default:
+                throw new Error('Invalid payment method');
+        }
     }
 }
 
 class PaymentContext {
-    constructor(method) {
-        // Áp dụng Strategy Pattern dựa trên lựa chọn từ giao diện 
-        if (method === 'Bank Transfer') {
-            this.strategy = new BankTransferStrategy();
-        } else if (method === 'Credit Card') {
-            this.strategy = new CreditCardStrategy();
-        } else {
-            this.strategy = new BankTransferStrategy(); 
-        }
+    constructor(strategy) {
+        this.strategy = strategy;
     }
 
     execute(amount) {
@@ -29,4 +41,7 @@ class PaymentContext {
     }
 }
 
-module.exports = PaymentContext;
+module.exports = {
+    PaymentContext,
+    StrategyFactory
+};
