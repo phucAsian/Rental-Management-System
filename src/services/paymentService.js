@@ -1,24 +1,39 @@
 class BankTransferStrategy {
     process(amount) {
-        return { success: true, method: 'Bank Transfer', message: `Bank transfer successful: $${amount}` };
+        return {
+            success: true,
+            method: 'Bank Transfer',
+            message: `Transfer successful: $${amount}`
+        };
     }
 }
 
 class CreditCardStrategy {
     process(amount) {
-        return { success: true, method: 'Credit Card', message: `Card payment successful: $${amount}` };
+        return {
+            success: true,
+            method: 'Credit Card',
+            message: `Card payment successful: $${amount}`
+        };
+    }
+}
+
+class StrategyFactory {
+    static create(method) {
+        switch (method) {
+            case 'Bank Transfer':
+                return new BankTransferStrategy();
+            case 'Credit Card':
+                return new CreditCardStrategy();
+            default:
+                throw new Error('Invalid payment method');
+        }
     }
 }
 
 class PaymentContext {
-    constructor(method) {
-        if (method === 'Bank Transfer') {
-            this.strategy = new BankTransferStrategy();
-        } else if (method === 'Credit Card') {
-            this.strategy = new CreditCardStrategy();
-        } else {
-            this.strategy = new BankTransferStrategy(); 
-        }
+    constructor(strategy) {
+        this.strategy = strategy;
     }
 
     execute(amount) {
@@ -26,4 +41,7 @@ class PaymentContext {
     }
 }
 
-module.exports = PaymentContext;
+module.exports = {
+    PaymentContext,
+    StrategyFactory
+};
