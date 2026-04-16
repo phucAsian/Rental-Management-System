@@ -23,6 +23,7 @@ exports.rooms = async (req, res) => {
         const rooms = roomsData.map(roomData => RoomFactory.fromDatabase(roomData));
         res.render('admin/rooms', { 
             layout: 'admin',
+          isRooms: true,
             rooms: rooms.map(room => room.toPlainObject())
         });
     } catch (err) {

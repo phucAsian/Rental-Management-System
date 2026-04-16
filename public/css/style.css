@@ -283,3 +283,305 @@ body {
   .main-column-content {
     width: 100%;
   }
+
+/* Home page: subtle motion for room browsing */
+.home-page .rooms-hero {
+  animation: homeFadeUp 0.45s ease-out both;
+}
+
+.home-page .search-panel {
+  animation: homeFadeLeft 0.5s ease-out 0.1s both;
+}
+
+.home-page .room-item-card {
+  border: 1px solid #e9edf5;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  animation: homeFadeUp 0.45s ease-out both;
+}
+
+.home-page .room-item-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(21, 41, 76, 0.12) !important;
+  border-color: #d8e3f5;
+}
+
+.home-page .room-item-card img {
+  transition: transform 0.45s ease;
+}
+
+.home-page .room-item-card:hover img {
+  transform: scale(1.03);
+}
+
+.home-page .room-item-card .btn {
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.home-page .room-item-card .btn:hover {
+  transform: translateY(-1px);
+}
+
+.home-page .search-panel .btn-primary {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-page .search-panel .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(13, 110, 253, 0.22) !important;
+}
+
+.home-page .row.g-4 > div:nth-child(1) .room-item-card { animation-delay: 0.04s; }
+.home-page .row.g-4 > div:nth-child(2) .room-item-card { animation-delay: 0.08s; }
+.home-page .row.g-4 > div:nth-child(3) .room-item-card { animation-delay: 0.12s; }
+.home-page .row.g-4 > div:nth-child(4) .room-item-card { animation-delay: 0.16s; }
+.home-page .row.g-4 > div:nth-child(5) .room-item-card { animation-delay: 0.2s; }
+.home-page .row.g-4 > div:nth-child(6) .room-item-card { animation-delay: 0.24s; }
+.home-page .row.g-4 > div:nth-child(7) .room-item-card { animation-delay: 0.28s; }
+.home-page .row.g-4 > div:nth-child(8) .room-item-card { animation-delay: 0.32s; }
+
+@keyframes homeFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes homeFadeLeft {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-page .rooms-hero,
+  .home-page .search-panel,
+  .home-page .room-item-card {
+    animation: none !important;
+  }
+
+  .home-page .room-item-card,
+  .home-page .room-item-card img,
+  .home-page .room-item-card .btn,
+  .home-page .search-panel .btn-primary {
+    transition: none !important;
+  }
+}
+
+/* Admin pages: simple and calm motion */
+.admin-page main h3 {
+  animation: adminFadeUp 0.35s ease-out both;
+}
+
+.admin-page main .card {
+  animation: adminFadeUp 0.4s ease-out both;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-page main .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08) !important;
+}
+
+.admin-page main .row > [class*="col"]:nth-child(1) .card { animation-delay: 0.03s; }
+.admin-page main .row > [class*="col"]:nth-child(2) .card { animation-delay: 0.06s; }
+.admin-page main .row > [class*="col"]:nth-child(3) .card { animation-delay: 0.09s; }
+.admin-page main .row > [class*="col"]:nth-child(4) .card { animation-delay: 0.12s; }
+
+.admin-page main .table tbody tr {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-page main .table-hover tbody tr:hover {
+  transform: translateX(2px);
+}
+
+.admin-page .sticky-sidebar .nav-link {
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-page .sticky-sidebar .nav-link:hover {
+  transform: translateX(2px);
+}
+
+.admin-page .sticky-sidebar .nav-link.bg-primary {
+  animation: adminHighlight 0.28s ease-out both;
+}
+
+.admin-page .navbar .btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-page .navbar .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
+}
+
+@keyframes adminFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes adminHighlight {
+  from {
+    opacity: 0.7;
+    transform: translateX(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-page main h3,
+  .admin-page main .card,
+  .admin-page .sticky-sidebar .nav-link.bg-primary {
+    animation: none !important;
+  }
+
+  .admin-page main .card,
+  .admin-page main .table tbody tr,
+  .admin-page .sticky-sidebar .nav-link,
+  .admin-page .navbar .btn {
+    transition: none !important;
+  }
+}
+
+/* Tenant pages: subtle motion similar to admin pages */
+.tenant-page main h3,
+.tenant-page main h5 {
+  animation: tenantFadeUp 0.35s ease-out both;
+}
+
+.tenant-page main .card {
+  animation: tenantFadeUp 0.4s ease-out both;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tenant-page main .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08) !important;
+}
+
+.tenant-page main .table tbody tr {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.tenant-page main .table-hover tbody tr:hover {
+  transform: translateX(2px);
+}
+
+.tenant-page .sticky-sidebar .nav-link {
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.tenant-page .sticky-sidebar .nav-link:hover {
+  transform: translateX(2px);
+}
+
+.tenant-page .sticky-sidebar .nav-link.bg-primary {
+  animation: tenantHighlight 0.28s ease-out both;
+}
+
+.tenant-page .navbar .btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tenant-page .navbar .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.1);
+}
+
+/* Tenant payment modal animation */
+#paymentModal.tenant-modal-open {
+  animation: tenantModalOverlayIn 0.2s ease-out forwards;
+}
+
+#paymentModal .modal-box {
+  transform: translateY(8px) scale(0.985);
+  opacity: 0;
+}
+
+#paymentModal.tenant-modal-open .modal-box {
+  animation: tenantModalPanelIn 0.24s ease-out forwards;
+}
+
+@keyframes tenantFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tenantHighlight {
+  from {
+    opacity: 0.7;
+    transform: translateX(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes tenantModalOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes tenantModalPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tenant-page main h3,
+  .tenant-page main h5,
+  .tenant-page main .card,
+  .tenant-page .sticky-sidebar .nav-link.bg-primary,
+  #paymentModal.tenant-modal-open,
+  #paymentModal.tenant-modal-open .modal-box {
+    animation: none !important;
+  }
+
+  .tenant-page main .card,
+  .tenant-page main .table tbody tr,
+  .tenant-page .sticky-sidebar .nav-link,
+  .tenant-page .navbar .btn {
+    transition: none !important;
+  }
+
+  #paymentModal .modal-box {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

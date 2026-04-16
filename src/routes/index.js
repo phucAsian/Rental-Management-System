@@ -9,6 +9,7 @@ router.use('/', require('./home.route'));
 
 router.get('/', async (req, res) => {
   try {
+    const keyword = (req.query.keyword || '').trim();
     const floorQuery = req.query.floor || 'all';
     const statusQuery = req.query.status || 'all';
     const sortPrice = req.query.sortPrice || 'default';
@@ -21,6 +22,10 @@ router.get('/', async (req, res) => {
 
     if (statusQuery !== 'all') {
       query = query.where('status', statusQuery);
+    }
+
+    if (keyword) {
+      query = query.whereRaw('CAST(room_number AS TEXT) ILIKE ?', [`%${keyword}%`]);
     }
 
     if (sortPrice === 'asc') {
@@ -45,6 +50,7 @@ router.get('/', async (req, res) => {
     res.render('home/index', { 
       layout: 'main', 
       rooms: formattedRooms,
+      currentKeyword: keyword,
       currentFloor: floorQuery,
       currentStatus: statusQuery,
       currentSort: sortPrice

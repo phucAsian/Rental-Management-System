@@ -36,6 +36,7 @@ router.get('/rooms', async (req, res) => {
         
         res.render('admin/rooms', { 
             layout: 'admin',
+          isRooms: true,
             rooms: rooms,
             error: req.query.error,
             success: req.query.success
@@ -93,6 +94,7 @@ router.get("/rooms", async (req, res) => {
 
     res.render("admin/rooms", {
       layout: "admin",
+      isRooms: true,
       rooms: rooms,
       error: req.query.error,
       success: req.query.success,
@@ -144,6 +146,7 @@ router.get("/accounts", async (req, res) => {
 
     res.render("admin/accounts", {
       layout: "admin",
+      isAccounts: true,
       accounts: accounts,
       availableRooms: availableRooms,
       error: req.query.error,
@@ -192,6 +195,7 @@ router.get("/tenants", async (req, res) => {
 
     res.render("admin/tenants", {
       layout: "admin",
+      isTenants: true,
       tenants: tenants,
     });
   } catch (error) {
@@ -253,6 +257,7 @@ router.get("/payments", async (req, res) => {
 
     res.render("admin/payments", {
       layout: "admin",
+      isPayments: true,
       payments: payments,
       rooms: rooms,
       stats: {
@@ -280,6 +285,7 @@ router.get("/payments/:id", async (req, res) => {
   
   res.render("admin/payment-detail", { 
       layout: "admin", 
+      isPayments: true,
       invoice: invoice 
   }); 
 });
@@ -343,6 +349,7 @@ router.get("/revenue", async (req, res) => {
 
     res.render("admin/revenue", {
       layout: "admin",
+      isRevenue: true,
       totalRevenue,
       pendingRevenue,
       paidCount,

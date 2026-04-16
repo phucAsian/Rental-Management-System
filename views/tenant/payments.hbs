@@ -89,13 +89,19 @@
 
 <script>
   function openPaymentModal(invoiceId, amount) {
-    document.getElementById("paymentModal").style.display = "flex";
+    const modal = document.getElementById("paymentModal");
+    modal.style.display = "flex";
+    modal.classList.remove("tenant-modal-open");
+    void modal.offsetWidth;
+    modal.classList.add("tenant-modal-open");
     document.getElementById("modalInvoiceId").innerText = invoiceId;
     document.getElementById("modalAmount").innerText = "$ " + amount;
     document.getElementById("modalInvoiceIdInput").value = invoiceId;
   }
 
   function closePaymentModal() {
-    document.getElementById("paymentModal").style.display = "none";
+    const modal = document.getElementById("paymentModal");
+    modal.classList.remove("tenant-modal-open");
+    modal.style.display = "none";
   }
 </script>
